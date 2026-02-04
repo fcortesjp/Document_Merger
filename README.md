@@ -1,6 +1,7 @@
 # Google Sheets to PDF Mail Merge Tool
 
-A powerful, custom-built Google Apps Script tool that automates the process of merging spreadsheet data into Google Doc templates and converting them into professional PDF documents.
+A simple, custom-built bive coded Google Apps Script tool that automates the process of merging spreadsheet data into Google Doc templates and converting them into professional PDF documents.
+This was built keepin in mind similar funcionality provided by an existent doc merger tool (gsheet addon) which is dealing with an outage at the moment.
 
 ## 🚀 Features
 
