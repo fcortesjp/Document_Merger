@@ -26,8 +26,8 @@ Create a tab named `Setup` with the following columns (Header in Row 1):
 
 ### 2. The Data Worksheet(s)
 Each worksheet you intend to merge must include the following:
-- A column named exactly **CODIGO**.
-- A column named exactly **AÑO**.
+- A column named exactly **CODIGO**. (use to name the pdf file being created)
+- A column named exactly **AÑO**. (use to name the pdf file being created)
 - Four columns for status tracking (the script will look for these keywords in the headers):
   - `Merged Doc ID`
   - `Merged Doc URL`
