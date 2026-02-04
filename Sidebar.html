@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Using Tailwind for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Spinner animation */
+      .loader {
+        border-top-color: #3498db;
+        -webkit-animation: spinner 1.5s linear infinite;
+        animation: spinner 1.5s linear infinite;
+      }
+      @keyframes spinner {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 p-6 font-sans text-gray-700">
+
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Merge Configuration</h2>
+      
+      <div id="loading-sheets" class="text-center py-4">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-8 w-8 mb-4 mx-auto"></div>
+        <p class="text-sm text-gray-500">Loading worksheets from Setup...</p>
+      </div>
+
+      <div id="form-container" class="hidden">
+        <label for="worksheet-select" class="block text-sm font-medium text-gray-700 mb-2">Select Worksheet</label>
+        <select id="worksheet-select" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 mb-6">
+          <option value="" disabled selected>Choose a sheet...</option>
+        </select>
+
+        <button id="run-btn" onclick="runMerge()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 flex justify-center items-center">
+          <span>Run Merge</span>
+        </button>
+      </div>
+
+      <div id="status-area" class="mt-4 hidden p-3 rounded text-sm"></div>
+    </div>
+
+    <script>
+      // Initialize on load
+      window.onload = function() {
+        google.script.run
+          .withSuccessHandler(populateDropdown)
+          .withFailureHandler(showError)
+          .getSetupWorksheets();
+      };
+
+      function populateDropdown(sheetNames) {
+        const select = document.getElementById('worksheet-select');
+        const loader = document.getElementById('loading-sheets');
+        const form = document.getElementById('form-container');
+
+        if (sheetNames.length === 0) {
+          loader.innerHTML = '<p class="text-red-500">No worksheets found in Setup.</p>';
+          return;
+        }
+
+        sheetNames.forEach(name => {
+          const option = document.createElement('option');
+          option.value = name;
+          option.text = name;
+          select.appendChild(option);
+        });
+
+        loader.classList.add('hidden');
+        form.classList.remove('hidden');
+      }
+
+      function runMerge() {
+        const select = document.getElementById('worksheet-select');
+        const selectedSheet = select.value;
+        const statusArea = document.getElementById('status-area');
+        const btn = document.getElementById('run-btn');
+
+        if (!selectedSheet) {
+          showStatus('Please select a worksheet first.', 'error');
+          return;
+        }
+
+        // UI State: Processing
+        btn.disabled = true;
+        btn.innerHTML = '<div class="loader ease-linear rounded-full border-2 border-t-2 border-white h-4 w-4 mr-2"></div> Processing...';
+        showStatus('Processing merge... This may take a moment.', 'info');
+
+        google.script.run
+          .withSuccessHandler(function(result) {
+             btn.disabled = false;
+             btn.innerHTML = 'Run Merge';
+             showStatus(`Success! Merged ${result.count} documents.`, 'success');
+          })
+          .withFailureHandler(function(err) {
+             btn.disabled = false;
+             btn.innerHTML = 'Run Merge';
+             showStatus('Error: ' + err.message, 'error');
+          })
+          .runMergeProcess(selectedSheet);
+      }
+
+      function showStatus(msg, type) {
+        const div = document.getElementById('status-area');
+        div.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+        
+        div.textContent = msg;
+        div.classList.remove('hidden');
+
+        if (type === 'error') {
+          div.classList.add('bg-red-100', 'text-red-700');
+        } else if (type === 'success') {
+          div.classList.add('bg-green-100', 'text-green-700');
+        } else {
+          div.classList.add('bg-blue-100', 'text-blue-700');
+        }
+      }
+
+      function showError(err) {
+         showStatus(err.message, 'error');
+         document.getElementById('loading-sheets').classList.add('hidden');
+      }
+    </script>
+  </body>
+</html>
