@@ -23,6 +23,7 @@ Create a tab named `Setup` with the following columns (Header in Row 1):
 - **Column B (Master Doc ID)**: The ID of the Google Doc template (found in the URL).
 - **Column C (Mapping)**: A JSON string mapping column numbers to placeholders.
   - *Example*: `{"2":"<<CODIGO>>", "5":"<<ESTUDIANTE>>", "6":"<<GRADO>>"}`
+  -  the column number is 1-based, meaning col A in the mapping should be "1"
 - **Column D (Folder ID)**: The ID of the Google Drive folder where PDFs should be saved.
 
 ### 2. The Data Worksheet(s)
